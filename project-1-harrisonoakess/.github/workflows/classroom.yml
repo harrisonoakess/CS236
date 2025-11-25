@@ -1,0 +1,60 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Bucket 20
+      id: bucket-20
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 10
+        max-score: 20
+        setup-command: sh ./config_test.sh 20
+    - name: Bucket 40
+      id: bucket-40
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 10
+        max-score: 20
+        setup-command: sh ./config_test.sh 40
+    - name: Bucket 60
+      id: bucket-60
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 10
+        max-score: 20
+        setup-command: sh ./config_test.sh 60
+    - name: Bucket 80
+      id: bucket-80
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 10
+        max-score: 20
+        setup-command: sh ./config_test.sh 80
+    - name: Bucket 100
+      id: bucket-100
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 10
+        max-score: 20
+        setup-command: sh ./config_test.sh 100
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        BUCKET-20_RESULTS: "${{steps.bucket-20.outputs.result}}"
+        BUCKET-40_RESULTS: "${{steps.bucket-40.outputs.result}}"
+        BUCKET-60_RESULTS: "${{steps.bucket-60.outputs.result}}"
+        BUCKET-80_RESULTS: "${{steps.bucket-80.outputs.result}}"
+        BUCKET-100_RESULTS: "${{steps.bucket-100.outputs.result}}"
+      with:
+        runners: bucket-20,bucket-40,bucket-60,bucket-80,bucket-100
